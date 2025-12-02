@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GameZone — Full Working Games</title>
+
+<style>
+body{margin:0;background:#0d0d12;color:#fff;font-family:Arial;}
+header{background:#1a1a22;padding:15px;display:flex;justify-content:space-between;align-items:center;}
+.logo{font-size:22px;font-weight:bold;}
+.balance{font-size:18px;}
+.container{padding:15px;}
+
+.games-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+    gap:15px;margin-top:20px;
+}
+.game-card{
+    background:#1a1a22;padding:20px;text-align:center;border-radius:10px;
+    cursor:pointer;border:1px solid #222;font-size:18px;
+}
+.game-card:hover{background:#222;}
+
+#game-panel{display:none;margin-top:20px;}
+.btn{
+    padding:12px 20px;background:#333;color:#fff;border:none;
+    border-radius:8px;cursor:pointer;font-size:17px;width:100%;
+}
+.btn:hover{background:#444;}
+
+.box{
+    background:#111;padding:20px;margin-top:20px;border-radius:10px;text-align:center;
+}
+.input{
+    width:100%;padding:12px;border-radius:8px;border:none;margin-top:10px;font-size:17px;
+}
+
+.result{
+    font-size:30px;margin-top:15px;font-weight:bold;
+}
+
+/* MOBILE RESPONSIVE */
+@media(max-width:600px){
+    header{flex-direction:column;text-align:center;gap:10px;}
+    .games-grid{grid-template-columns:repeat(auto-fit,minmax(110px,1fr));}
+    .game-card{padding:18px;font-size:16px;}
+    .btn{font-size:16px;}
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: divice-width;
+    padding: 20px 8%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    animation: slideDown 1s ease forwards;
+}
+@keyframes slideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+.navbar a {
+    position: relative;
+    margin-left: 30px;
+    font-size: 16px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s, transform 0.3s;
+    pointer-events: auto;
+}
+.navbar a::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #ff0040;
+    transition: width 0.4s;
+}
+.navbar a:hover::after { width: 100%; }
+.navbar a:hover { color: #ff0040; transform: scale(1.1); }
+.navbar a.active { color: #ff0040; font-weight: 600; }
+.navbar a.active::after { width: 100%; }
+
+
+</style>
+</head>
+
+<body>
+<nav class="navbar">
+    <a href="home.html" class="active">Home</a>
+    <a href="About .html">About</a>
+    <a href="Contact.html">Contact</a>
+    <a href="index.html" id="auth-toggle">Login</a>
+</nav><br><br><br>
+<header>
+    <div class="logo">🎮 GameZone</div>
+    <div class="balance">Balance: <span id="balance">100.00</span>৳</div>
+</header>
+
+<div class="container">
+
+<h2>🎮 গেম নির্বাচন করুন</h2>
+
+<div class="games-grid">
+    <div class="game-card" onclick="openGame('crash')">🔥 Crash</div>
+    <div class="game-card" onclick="openGame('dice')">🎲 Dice</div>
+    <div class="game-card" onclick="openGame('spin')">🎡 Spin</div>
+    <div class="game-card" onclick="openGame('cards')">🃏 Cards</div>
+    <div class="game-card" onclick="openGame('mines')">💣 Mines</div>
+</div>
+
+
+<!-- GAME PANEL -->
+<div id="game-panel">
+    <button class="btn" onclick="closeGame()">⬅ Back</button>
+    <h2 id="title"></h2>
+
+    <!-- CRASH GAME -->
+    <div id="crash" class="box" style="display:none;">
+        <div class="result" id="crash-m">1.00x</div>
+        <input class="input" type="number" id="crash-bet" placeholder="Bet Amount">
+        <button class="btn" onclick="startCrash()">Start</button>
+    </div>
+
+    <!-- DICE GAME -->
+    <div id="dice" class="box" style="display:none;">
+        <h3>🎲 1–6 থেকে একটি নাম্বার নির্বাচন করুন</h3>
+        <input class="input" type="number" id="dice-num" min="1" max="6" placeholder="Number (1-6)">
+        <input class="input" type="number" id="dice-bet" placeholder="Bet Amount">
+        <button class="btn" onclick="startDice()">Roll Dice</button>
+        <div class="result" id="dice-res"></div>
+    </div>
+
+    <!-- SPIN GAME -->
+    <div id="spin" class="box" style="display:none;">
+        <h3>🎡 Spin Wheel (x1, x2, x5, x10)</h3>
+        <input class="input" type="number" id="spin-bet" placeholder="Bet Amount">
+        <button class="btn" onclick="startSpin()">Spin</button>
+        <div class="result" id="spin-res"></div>
+    </div>
+
+    <!-- CARDS GAME -->
+    <div id="cards" class="box" style="display:none;">
+        <h3>🃏 High (A,K,Q,J) বা Low (2–10) ?</h3>
+        <select class="input" id="card-choice">
+            <option value="high">High Card</option>
+            <option value="low">Low Card</option>
+        </select>
+        <input class="input" type="number" id="card-bet" placeholder="Bet Amount">
+
+        <button class="btn" onclick="startCards()">Draw Card</button>
+        <div class="result" id="card-res"></div>
+    </div>
+
+    <!-- MINES GAME -->
+    <div id="mines" class="box" style="display:none;">
+        <h3>💣 Mines: 1–5 এর মধ্যে একটি সেফ পয়েন্ট</h3>
+        <input class="input" type="number" id="mine-bet" placeholder="Bet Amount">
+        <button class="btn" onclick="startMines()">Open Safe Point</button>
+        <div class="result" id="mine-res"></div>
+    </div>
+
+</div>
+
+</div>
+
+<script>
+let balance = 100;
+
+// UPDATE BALANCE
+function updateBalance(){
+    document.getElementById("balance").innerText = balance.toFixed(2);
+}
+
+// OPEN PANEL
+function openGame(g){
+    document.getElementById("game-panel").style.display="block";
+    document.getElementById("title").innerText = g.toUpperCase();
+
+    document.querySelectorAll(".box").forEach(b=> b.style.display="none");
+    document.getElementById(g).style.display="block";
+}
+
+// CLOSE PANEL
+function closeGame(){
+    document.getElementById("game-panel").style.display="none";
+}
+
+/* ----------------- CRASH GAME ------------------ */
+function startCrash(){
+    let bet = parseFloat(document.getElementById("crash-bet").value);
+    if(bet<=0) return alert("বেট দিন!");
+
+    if(bet>balance) return alert("Balance কম!");
+
+    balance -= bet; updateBalance();
+
+    let m = 1.00;
+    let crashPoint = (Math.random()*1.3)+1.0; // lose probability high
+    let box = document.getElementById("crash-m");
+
+    let go = setInterval(()=>{
+        m += 0.03;
+        box.innerText = m.toFixed(2)+"x";
+
+        if(m >= crashPoint){
+            clearInterval(go);
+            box.style.color="red";
+            setTimeout(()=>{box.style.color="#fff";box.innerText="1.00x";},1000);
+        }
+    },120);
+}
+
+/* ----------------- DICE GAME ------------------ */
+function startDice(){
+    let guess = parseInt(document.getElementById("dice-num").value);
+    let bet = parseFloat(document.getElementById("dice-bet").value);
+    let show = document.getElementById("dice-res");
+
+    if(guess<1 || guess>6) return alert("1-6 নির্বাচন করুন!");
+    if(bet>balance) return alert("Balance কম!");
+
+    balance -= bet; updateBalance();
+
+    let roll = Math.floor(Math.random()*6)+1;
+
+    if(roll === guess){
+        let win = bet * 4;
+        balance += win; updateBalance();
+        show.innerText = "জিতেছেন! 🎉 Dice: "+roll+" | +"+win+"৳";
+    } else {
+        show.innerText = "হার! Dice: "+roll;
+    }
+}
+
+/* ----------------- SPIN GAME ------------------ */
+function startSpin(){
+    let bet = parseFloat(document.getElementById("spin-bet").value);
+    let show = document.getElementById("spin-res");
+    if(bet>balance) return alert("Balance কম!");
+
+    balance -= bet; updateBalance();
+
+    let multipliers = [1,2,5,10];
+    let pick = multipliers[Math.floor(Math.random()*multipliers.length)];
+
+    let win = bet * pick;
+    balance += win; updateBalance();
+
+    show.innerText = "Result x"+pick+" | Win: "+win+"৳";
+}
+
+/* ----------------- CARDS GAME ------------------ */
+function startCards(){
+    let bet = parseFloat(document.getElementById("card-bet").value);
+    let type = document.getElementById("card-choice").value;
+    let show = document.getElementById("card-res");
+
+    if(bet>balance) return alert("Balance কম!");
+
+    balance -= bet; updateBalance();
+
+    let cards = ["A","K","Q","J","10","9","8","7","6","5","4","3","2"];
+    let pick = cards[Math.floor(Math.random()*cards.length)];
+
+    let high = ["A","K","Q","J"];
+    let isHigh = high.includes(pick);
+
+    if((isHigh && type==="high") || (!isHigh && type==="low")){
+        let win = bet * 2;
+        balance += win; updateBalance();
+        show.innerText = "Card: "+pick+" | You Win +"+win+"৳";
+    } else {
+        show.innerText = "Card: "+pick+" | You Lost!";
+    }
+}
+
+/* ----------------- MINES GAME ------------------ */
+function startMines(){
+    let bet = parseFloat(document.getElementById("mine-bet").value);
+    let show = document.getElementById("mine-res");
+
+    if(bet>balance) return alert("Balance কম!");
+
+    balance -= bet; updateBalance();
+
+    let safe = Math.floor(Math.random()*5)+1;
+    let mine = Math.floor(Math.random()*5)+1;
+
+    if(safe !== mine){
+        let win = bet * 3;
+        balance += win; updateBalance();
+        show.innerText = "Safe Point: "+safe+" | You Win +"+win+"৳";
+    } else {
+        show.innerText = "Boom 💣 | You Lost!";
+    }
+}
+</script>
+
+</body>
+</html>
